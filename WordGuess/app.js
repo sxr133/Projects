@@ -100,24 +100,28 @@ function getWord(selectBox) {
 
 function abc(word) {
   if (word.length <= 30) {
-    // Iterate through each character of the word
-    for (var i = 0; i < word.length; i++) {
-        var char = word.charAt(i);
-        console.log('char is: ' + char)
-        var divId = "div" + (i + 1); // Generating the id like "div1", "div2", ...
-        console.log('div is: ' + divId)
-        var divElement = document.getElementById(divId);
-        console.log('element is: ' + divElement)
-        if (divElement) {
-            divElement.textContent = char; // Assigning the character to the div
-        } else {
-            console.log("Div with id " + divId + " not found.");
-        }
-    }
-} else {
-    console.log("Word length exceeds the number of divs.");
+      // Iterate through each character of the word
+      for (var i = 0; i < word.length; i++) {
+          var char = word.charAt(i);
+          var divId = "div" + (i + 1); // Generating the id like "div1", "div2", ...
+          var divElement = document.getElementById(divId);
+          if (divElement) {
+              divElement.textContent = char; // Assigning the character to the div
+          } else {
+              console.log("Div with id " + divId + " not found.");
+          }
+      }
+  } else {
+      console.log("Word length exceeds the number of divs.");
+  }
 }
-}
+/*
+function clearcontent(word) { 
+  for (var i = 0; i < word.length; i++) {
+    var divId = "div" + (i + 1); // Generating the id like "div1", "div2", ...
+    document.getElementById(divId).innerHTML = " "; // Assigning the character to the div
+  } 
+}*/
 
 create_Category_Display();
 create_Letter_Display();
