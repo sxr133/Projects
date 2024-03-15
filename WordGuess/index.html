@@ -3,10 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <title>Word Guess</title>
-  <link rel="stylesheet" type/"text/css" html="styles.css"
+  <link rel="stylesheet" type/"text/css" href="styles.css"
 </head>
 <body>
-  
-  <script src="app.js"></script>"
+  <div class="grid">
+    <div class="top-container">
+      <div id="categories">
+
+      </div>
+      <div class="spinner">
+        <div id="textbox" style="font-size: 24px; width: 200px; height: 50px; border: 1px solid black; text-align: center; line-height: 50px;">0</div>
+        <button onclick="spinWheel()">Spin</button>
+      </div>
+      <div class="stats">
+        <div id="scores">
+          Score: $<span id="current-score">0</span>
+        </div>
+        <div id="lives">
+          Lives: <span id="current-lives">5</span>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+    <div class="middle-container">
+      <div class="letters-container">
+        
+      </div>
+    </div>
+    <hr/>
+    <div class="word-board-container">
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
