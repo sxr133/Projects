@@ -15,7 +15,8 @@ body {
 }
 
 .top-container, 
-.middle-container {
+.middle-container,
+.bottom-container {
   width: 600px;
   height: 100px;
   background-color: purple;
@@ -68,8 +69,17 @@ body {
   color: white;
 }
 
-.word-board-container {
-  height: 75px;
+.bottom-container {
+  height: 265px;
+}
+
+.word-container{
+  width: 100px;
+  height: 40px;
+  color: white;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 #categories {
