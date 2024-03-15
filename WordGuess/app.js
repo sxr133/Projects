@@ -2,6 +2,7 @@ const alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 
 const options = ['Sports Team', 'World Capitals', 'Famous Sayings'];
 const letters_container = document.querySelector('.letters-container');
 const category_section = document.getElementById('categories');
+const spinner_section = document.getElementById('spinner');
 
 let width = 26;
 let letter_button_id
@@ -23,6 +24,21 @@ function create_Category_Section() {
   select.id = "category"
 
   category_section.appendChild(select)
+}
+
+function spinWheel() {
+  var values = ['100', '200', '300', '400', '500', '1000', 'Lose Your Turn', 'Bankrupt', '5000'];
+  var textbox = document.getElementById('textbox');
+  var startTime = Date.now();
+  var interval = setInterval(function() {
+      var elapsedTime = Date.now() - startTime;
+      if (elapsedTime >= 5000) {
+          clearInterval(interval);
+      } else {
+          var randomIndex = Math.floor(Math.random() * values.length);
+          textbox.textContent = values[randomIndex];
+      }
+  }, 10); // Update every 100 milliseconds
 }
 
 function create_Letter_Display() {
