@@ -1,24 +1,27 @@
 // Variables
-const alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+const alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 const capitals = ['Berlin', 'London', 'Paris', 'Rome', 'Ottawa'];
 const teams = ['Montreal Canadiens', 'Toronto BlueJays', 'Boston Red-Sox', 'Los Angeles Dodgers', 'New York Yankees'];
 const movies = ['Titanic', 'Avatar', 'Rocky', 'Shreik', 'Mission Impossible'];
-
 const options = ['Select Category', 'Sports Team', 'World Capitals', 'Movies'];
+
 const letters_container = document.querySelector('.letters-container');
 const category_section = document.getElementById('categories');
-const spinner_section = document.getElementById('spinner');
+const game_over = document.querySelector('.game-over-container')
 const word_guessed = document.querySelector('.word-container')
 const drop_down_label = document.createElement('label')
 const select = document.createElement('select')
 const spin_button = document.getElementById('spin_button')
+const livesDisplay = document.querySelector('#current-lives')
+const scoreDisplay = document.querySelector('#current-score')
+const textbox = document.getElementById('textbox');
 
-var values = ['100', '200', '300', '400', '500', '1000', '2500', '5000', 'Lose Your Turn', 'Bankrupt', '5000'];
-
-let lives = 5;
-let width = 26;
-let letter_button_id;
 let word;
+let lives = 5;
+let score = 0;
+
+var values = ['100', '200', '300', '400', '500', ' 1000', 'Lose Your Turn', 'Bankrupt'];
+
 
 // Top Section
 // Function to create the category drop-down box
@@ -46,19 +49,35 @@ function create_Category_Display() {
 // Function to get the selection chosen by the user
 function changeFunc() {
   var selectBox = document.getElementById("category").value;
-  lives -= 1
-  spin_button.removeAttribute('disabled')
-  console.log(letters_container)
-  for (let i = 0; i < alpha.length ; i++){
-    let btn = document.getElementById('btn' + i);
-    btn.removeAttribute('disabled');
-  }
+  enableSpinButton()
   getWord(selectBox)
+}
+
+// Function to retrieve a random word from the specifics array from selected choice
+function getWord(selectBox) {
+  switch(selectBox) {
+    case 'Sports Team':
+      word = teams[Math.floor(Math.random() * 5)]
+      word_Display(word);
+      console.log('geWord function' + word)
+      break
+    case 'World Capitals':
+      word = capitals[Math.floor(Math.random() * 5)]
+      word_Display(word);
+      console.log('geWord function' + word)
+      break
+    case 'Movies':
+      word =  movies[Math.floor(Math.random() * 5)]
+      word_Display(word);
+      console.log('geWord function' + word)
+      break
+  }
+  var boxSelected = document.getElementById("category")
+  boxSelected.setAttribute('disabled', true)
 }
 
 // Function to create the container that holds the amount values
 function spinWheel() {
-  var textbox = document.getElementById('textbox');
   var startTime = Date.now();
   var interval = setInterval(function() {
     var elapsedTime = Date.now() - startTime; 
@@ -69,53 +88,7 @@ function spinWheel() {
       textbox.textContent = values[randomIndex];
     }
   }, 10); // Update every 100 milliseconds
-}
-
-// Function to create the guessed word into an array or into a word
-function word_split(word) {
-  // Find the index of the last space character
-  var lastSpaceIndex = word.lastIndexOf(' ');
-
-  if (lastSpaceIndex > 0){
-    // Split the string into two parts based on the last space character
-    var firstPart = word.substring(0, lastSpaceIndex);
-    var secondPart = word.substring(lastSpaceIndex + 1);
-
-    // Create an array with the two parts
-    var newArray = [firstPart, secondPart];
-    console.log('newArray is ' + newArray); // Output: ["new york", "yankees"
-  }else{
-    newArray = word
-    console.log('word is: ' + word)
-  }
-  return newArray
-}
-
-// Function to retrieve a random word from the specifics array from selected choice
-function getWord(selectBox) {
-  switch(selectBox) {
-    case 'Sports Team':
-      word = teams[Math.floor(Math.random() * 5)]
-
-      newArray = word_split(word)
-      
-      word_Display(newArray);
-      break
-    case 'World Capitals':
-      word = capitals[Math.floor(Math.random() * 5)]
-      newArray = word_split(word)
-
-      word_Display(newArray);
-      break
-    case 'Movies':
-      word =  movies[Math.floor(Math.random() * 5)]
-      newArray = word_split(word)
-
-      word_Display(newArray);
-      break
-  }
-  var boxSelected = document.getElementById("category")
-  boxSelected.setAttribute('disabled', true)
+  enableAlphaButton()
 }
 
 // Middle Section
@@ -126,15 +99,36 @@ function create_Letter_Display() {
     const letter_button = document.createElement('button')
     letter_button.setAttribute('disabled', true)
     letter_button.setAttribute('id', 'btn' + i)
+    letter_button.setAttribute('onclick', 'check(this.id)' )
     letter_button.textContent = alpha[i]
     letters_container.appendChild(letter_button)
   }
 }
 
+function check(button_pressed) {
+  letter_selected = document.getElementById(button_pressed).innerHTML
+  let word_Lower = word.toLowerCase()
+  
+  if(word_Lower.includes(letter_selected.toLowerCase())){
+    for (let i = 0; i < word.length; i++){
+      if(word_Lower.charAt(i) === letter_selected.toLowerCase()){
+        let letter_selected_container = document.getElementById('div' + i);
+        letter_selected_container.style.backgroundColor = 'black';
+        score += parseInt(textbox.textContent)
+      }
+    }
+    document.getElementById(button_pressed).style.backgroundColor = 'white'
+    scoreDisplay.textContent = score
+  }else{
+    deductLives()
+  }
+  disableAlphaButton()
+}
+
 // Bottom Section
 function create_Word_Display() {
 
-  for (let i = 0; i < 45; i++){
+  for (let i = 0; i < 36; i++){
     const letter_box = document.createElement('div')
     letter_box.setAttribute('id', 'div' + i)
     word_guessed.appendChild(letter_box)
@@ -143,50 +137,52 @@ function create_Word_Display() {
 
 // Function to distribute each letter of the word into a textbox
 function word_Display(word) {
-  
-  if (Array.isArray(word)) {
-    if(word[0].length > 0){
-      for (var i = 0; i < word[0].length; i++) {
-        var char = word[0].charAt(i);
-        var divId = "div" + i; // Generating the id like "div1", "div2", ...
-        var divElement = document.getElementById(divId);
-        if (divElement) {
-            divElement.textContent = char; // Assigning the character to the div
-            divElement.style.backgroundColor = 'white'
-        }
-      }
-    }
-    if (word[1].length > 0) { 
-      for (var i = 0; i < word[1].length; i++) {
-        var char = word[1].charAt(i);
-        var divId = "div" + (i + 15); // Generating the id like "div1", "div2", ...
-        var divElement = document.getElementById(divId);
-        if (divElement) {
-            divElement.textContent = char; // Assigning the character to the div
-            divElement.style.backgroundColor = 'white'
-        }
-      }
-    }
-  }else{
-    for (var i = 0; i < word.length; i++) {
-      var char = word.charAt(i);
-      var divId = "div" + i; // Generating the id like "div1", "div2", ...
-      var divElement = document.getElementById(divId);
-      if (divElement) {
-          divElement.textContent = char; // Assigning the character to the div
-          divElement.style.backgroundColor = 'white'
+  console.log('the word is: ' + word)
+  for (var i = 0; i < word.length; i++) {
+    var char = word.charAt(i);
+    var divId = "div" + i; // Generating the id like "div1", "div2", ...
+    var divElement = document.getElementById(divId);
+    if (divElement) {
+      if (char.match(/[a-zA-Z]/)) {
+        divElement.textContent = char; // Assigning the character to the div
+        divElement.style.backgroundColor = 'white'
+      }else{
+        divElement.textContent = char; // Assigning the character to the div
+        // divElement.style.backgroundColor = 'black'
       }
     }
   }
 }
 
-/*
-function clearcontent(word) { 
-  for (var i = 0; i < word.length; i++) {
-    var divId = "div" + (i + 1); // Generating the id like "div1", "div2", ...
-    document.getElementById(divId).innerHTML = " "; // Assigning the character to the div
-  } 
-}*/
+function enableSpinButton() {
+  spin_button.removeAttribute('disabled')
+}
+
+function enableAlphaButton() {
+  for (let i = 0; i < alpha.length ; i++){
+    let btn = document.getElementById('btn' + i);
+    btn.removeAttribute('disabled');
+  }
+}
+
+function disableAlphaButton() {
+  for (let i = 0; i < alpha.length ; i++){
+    let btn = document.getElementById('btn' + i);
+    btn.setAttribute('disabled',true);
+  }
+}
+
+function deductLives() {
+  lives--
+  livesDisplay.innerHTML = lives
+
+  if (lives === 0){
+    console.log('hello')
+    game_over.innerHTML = 'You did not guess the word! Thanx for playing.'
+    spin_button.setAttribute('disabled', true)
+    disableAlphaButton()
+  }
+}
 
 create_Category_Display();  
 create_Letter_Display();
