@@ -145,43 +145,36 @@ function create_Word_Display() {
 function word_Display(word) {
   
   if (Array.isArray(word)) {
-    if (word.length === 1) {
-      // Iterate through each character of the word
-      for (var i = 0; i < word.length; i++) {
-        var char = word.charAt(i);
-        var divId = "div" + (i + 1); // Generating the id like "div1", "div2", ...
-        var divElement = document.getElementById(divId);
-        if (divElement) {
-            divElement.textContent = char; // Assigning the character to the div
-        } else {
-            console.log("Div with id " + divId + " not found.");
-        }
-      }
-    } else {
-      for (var i = 0; i < 15; i++) {
+    if(word[0].length > 0){
+      for (var i = 0; i < word[0].length; i++) {
         var char = word[0].charAt(i);
-        var divId = "div" + (i + 1); // Generating the id like "div1", "div2", ...
+        var divId = "div" + i; // Generating the id like "div1", "div2", ...
         var divElement = document.getElementById(divId);
         if (divElement) {
             divElement.textContent = char; // Assigning the character to the div
+            divElement.style.backgroundColor = 'white'
         }
       }
-      for (var i = 0; i < 15; i++) {
+    }
+    if (word[1].length > 0) { 
+      for (var i = 0; i < word[1].length; i++) {
         var char = word[1].charAt(i);
         var divId = "div" + (i + 15); // Generating the id like "div1", "div2", ...
         var divElement = document.getElementById(divId);
         if (divElement) {
             divElement.textContent = char; // Assigning the character to the div
+            divElement.style.backgroundColor = 'white'
         }
       }
     }
   }else{
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i < word.length; i++) {
       var char = word.charAt(i);
       var divId = "div" + i; // Generating the id like "div1", "div2", ...
       var divElement = document.getElementById(divId);
       if (divElement) {
           divElement.textContent = char; // Assigning the character to the div
+          divElement.style.backgroundColor = 'white'
       }
     }
   }
