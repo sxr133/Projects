@@ -20,7 +20,6 @@ let word;
 let lives = 5;
 let score = 0;
 let letters_found = 0;
-let spinnertext = '';
 
 var values = ['100', '200', '300', '400', '500', ' 1000', 'Lose your turn', 'Bankrupt'];
 var updatedText = "";
@@ -71,12 +70,15 @@ function getWord(selectBox) {
 }
 
 // Function to create the container that holds the amount values
-function spinWheel() {
+function spinWheel(callback) {
+  var spinnerText = '';
   var startTime = Date.now();
   var interval = setInterval(function() {
     var elapsedTime = Date.now() - startTime; 
+    
     if (elapsedTime >= 500) {
       clearInterval(interval);
+      callback(spinnerText);
     } else {
       var randomIndex = Math.floor(Math.random() * values.length);
       updatedText = values[randomIndex];
@@ -84,9 +86,26 @@ function spinWheel() {
       textbox.textContent = updatedText;
     }
   }, 10); // Update every 100 milliseconds
+}
 
-  disableSpinButton()
-  enableAlphaButton()
+function handleSpin() {
+  spinWheel(function(updatedText) {
+    // This function will be called with the updated text once the interval is finished
+    // Update UI with the updated text
+    textbox.textContent = updatedText;
+    // Handle additional logic based on the updated text if needed
+    if (updatedText === 'Lose your turn' || updatedText === 'Bankrupt') {
+      if(updatedText === 'Bankrupt'){
+        textbox.textContent = 0
+      }
+      deductLives();
+      enableSpinButton();
+      disableAlphaButton();
+    } else {
+      disableSpinButton();
+      enableAlphaButton();
+    }
+  });
 }
 
 // Middle Section
@@ -106,31 +125,26 @@ function create_Letter_Display() {
 function check(button_pressed) {
   letter_selected = document.getElementById(button_pressed).innerHTML
   let word_Lower = word.toLowerCase()
-  
-  if (spinnerText != 'Lose your turn' && spinnerText != 'Bankrupt'){
-    console.log("i get here")
-    if(word_Lower.includes(letter_selected.toLowerCase())){
-      for (let i = 0; i < word.length; i++){
-        if(word_Lower.charAt(i) === letter_selected.toLowerCase()){
-          let letter_selected_container = document.getElementById('div' + i);
-          letter_selected_container.style.backgroundColor = 'black';
-          score += parseInt(textbox.textContent)
-          letters_found += 1
-        }
+
+  if(word_Lower.includes(letter_selected.toLowerCase())){
+    for (let i = 0; i < word.length; i++){
+      if(word_Lower.charAt(i) === letter_selected.toLowerCase()){
+        let letter_selected_container = document.getElementById('div' + i);
+        letter_selected_container.style.backgroundColor = 'black';
+        score += parseInt(textbox.textContent)
+        letters_found += 1
       }
-      console.log(document.getElementById(button_pressed))
-      document.getElementById(button_pressed).style.backgroundColor = 'white'
-      scoreDisplay.textContent = score
-      disableAlphaButton()
-      enableSpinButton()
-    }else{
-      document.getElementById(button_pressed).style.backgroundColor = 'white'
-      deductLives()
     }
+    document.getElementById(button_pressed).style.backgroundColor = 'white'
+    scoreDisplay.textContent = score
+    disableAlphaButton()
+    enableSpinButton()
   }else{
     document.getElementById(button_pressed).style.backgroundColor = 'white'
     deductLives()
-  } 
+  }
+  console.log('lf is: ' +letters_found)
+  console.log('wl is: ' + word.length)
   if (letters_found === word.length){
     game_status.innerHTML = 'Congratulations on finding the word. You won a total of $' + score
     spin_button.setAttribute('disabled', true)
@@ -192,7 +206,6 @@ function disableAlphaButton() {
 }
 
 function deductLives() {
-  console.log(lives)
   lives--
   livesDisplay.innerHTML = lives
 
@@ -230,6 +243,7 @@ function replayGame() {
   document.getElementById("category").value="Select Category"
   game_status.innerHTML = ''
   textbox.textContent = ''
+  letters_found = 0
 }
 
 create_Category_Display();  
