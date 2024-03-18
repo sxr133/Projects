@@ -7,30 +7,27 @@ const options = ['Select Category', 'Sports Team', 'World Capitals', 'Movies'];
 
 const letters_container = document.querySelector('.letters-container');
 const category_section = document.getElementById('categories');
-const game_over = document.querySelector('.game-over-container')
+const game_status = document.querySelector('.game-status-container')
 const word_guessed = document.querySelector('.word-container')
-const drop_down_label = document.createElement('label')
 const select = document.createElement('select')
 const spin_button = document.getElementById('spin_button')
 const livesDisplay = document.querySelector('#current-lives')
 const scoreDisplay = document.querySelector('#current-score')
 const textbox = document.getElementById('textbox');
+const replay_button = document.querySelector('#replay_button')
 
 let word;
 let lives = 5;
 let score = 0;
+let letters_found = 0;
+let spinnertext = '';
 
-var values = ['100', '200', '300', '400', '500', ' 1000', 'Lose Your Turn', 'Bankrupt'];
-
+var values = ['100', '200', '300', '400', '500', ' 1000', 'Lose your turn', 'Bankrupt'];
+var updatedText = "";
 
 // Top Section
 // Function to create the category drop-down box
 function create_Category_Display() {
-  // Label
-  drop_down_label.setAttribute('for', 'categories')
-  drop_down_label.innerHTML = "Categories:"
-  category_section.appendChild(drop_down_label)
-  
   // Select
   select.setAttribute('onchange', 'changeFunc()')
   for (var i = 0; i < options.length; i++) {
@@ -59,17 +56,14 @@ function getWord(selectBox) {
     case 'Sports Team':
       word = teams[Math.floor(Math.random() * 5)]
       word_Display(word);
-      console.log('geWord function' + word)
       break
     case 'World Capitals':
       word = capitals[Math.floor(Math.random() * 5)]
       word_Display(word);
-      console.log('geWord function' + word)
       break
     case 'Movies':
       word =  movies[Math.floor(Math.random() * 5)]
       word_Display(word);
-      console.log('geWord function' + word)
       break
   }
   var boxSelected = document.getElementById("category")
@@ -85,9 +79,13 @@ function spinWheel() {
       clearInterval(interval);
     } else {
       var randomIndex = Math.floor(Math.random() * values.length);
-      textbox.textContent = values[randomIndex];
+      updatedText = values[randomIndex];
+      spinnerText = values[randomIndex];
+      textbox.textContent = updatedText;
     }
   }, 10); // Update every 100 milliseconds
+
+  disableSpinButton()
   enableAlphaButton()
 }
 
@@ -109,20 +107,36 @@ function check(button_pressed) {
   letter_selected = document.getElementById(button_pressed).innerHTML
   let word_Lower = word.toLowerCase()
   
-  if(word_Lower.includes(letter_selected.toLowerCase())){
-    for (let i = 0; i < word.length; i++){
-      if(word_Lower.charAt(i) === letter_selected.toLowerCase()){
-        let letter_selected_container = document.getElementById('div' + i);
-        letter_selected_container.style.backgroundColor = 'black';
-        score += parseInt(textbox.textContent)
+  if (spinnerText != 'Lose your turn' && spinnerText != 'Bankrupt'){
+    console.log("i get here")
+    if(word_Lower.includes(letter_selected.toLowerCase())){
+      for (let i = 0; i < word.length; i++){
+        if(word_Lower.charAt(i) === letter_selected.toLowerCase()){
+          let letter_selected_container = document.getElementById('div' + i);
+          letter_selected_container.style.backgroundColor = 'black';
+          score += parseInt(textbox.textContent)
+          letters_found += 1
+        }
       }
+      console.log(document.getElementById(button_pressed))
+      document.getElementById(button_pressed).style.backgroundColor = 'white'
+      scoreDisplay.textContent = score
+      disableAlphaButton()
+      enableSpinButton()
+    }else{
+      document.getElementById(button_pressed).style.backgroundColor = 'white'
+      deductLives()
     }
-    document.getElementById(button_pressed).style.backgroundColor = 'white'
-    scoreDisplay.textContent = score
   }else{
+    document.getElementById(button_pressed).style.backgroundColor = 'white'
     deductLives()
+  } 
+  if (letters_found === word.length){
+    game_status.innerHTML = 'Congratulations on finding the word. You won a total of $' + score
+    spin_button.setAttribute('disabled', true)
+    disableAlphaButton()
+    replay_button.style.display = "block"
   }
-  disableAlphaButton()
 }
 
 // Bottom Section
@@ -147,6 +161,7 @@ function word_Display(word) {
         divElement.textContent = char; // Assigning the character to the div
         divElement.style.backgroundColor = 'white'
       }else{
+        letters_found += 1
         divElement.textContent = char; // Assigning the character to the div
         // divElement.style.backgroundColor = 'black'
       }
@@ -156,6 +171,10 @@ function word_Display(word) {
 
 function enableSpinButton() {
   spin_button.removeAttribute('disabled')
+}
+
+function disableSpinButton() {
+  spin_button.setAttribute('disabled', true);
 }
 
 function enableAlphaButton() {
@@ -173,15 +192,44 @@ function disableAlphaButton() {
 }
 
 function deductLives() {
+  console.log(lives)
   lives--
   livesDisplay.innerHTML = lives
 
   if (lives === 0){
-    console.log('hello')
-    game_over.innerHTML = 'You did not guess the word! Thanx for playing.'
-    spin_button.setAttribute('disabled', true)
+    game_status.innerHTML = 'You did not guess the word! Thanx for playing.'
+    disableSpinButton()
     disableAlphaButton()
+    replay_button.style.display = "block"
+  }else{
+    console.log('the letter should be white out')
+    disableAlphaButton()
+    enableSpinButton()
   }
+}
+
+function replayGame() {
+  var boxSelected = document.getElementById("category")
+  boxSelected.removeAttribute('disabled')
+  for (let i = 0; i < 36; i++){
+    var lbId = "div" + i
+    var letter_box_element = document.getElementById(lbId)
+    letter_box_element.textContent = " "
+    letter_box_element.style.backgroundColor="black"
+  }
+  for (let i = 0; i < alpha.length ; i++){
+    var btnId = "btn" + i
+    const letter_button = document.getElementById(btnId)
+    letter_button.style.backgroundColor='black'
+  }
+  replay_button.style.display = "none"
+  scoreDisplay.textContent = 0
+  score = 0
+  livesDisplay.textContent = 5
+  lives = 5
+  document.getElementById("category").value="Select Category"
+  game_status.innerHTML = ''
+  textbox.textContent = ''
 }
 
 create_Category_Display();  

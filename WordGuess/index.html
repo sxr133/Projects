@@ -8,12 +8,12 @@
 <body>
   <div class="grid">
     <div class="top-container">
-      <div id="categories">
-
+      <div id="categories">  
+        Categories:
       </div>
       
       <div class="spinner">
-        <div id="textbox">0</div>
+        <div id="textbox"></div>
         <button id="spin_button" onclick="spinWheel()" disabled="true">Spin</button>
       </div>
       
@@ -38,10 +38,12 @@
     <hr/>
     
     <div class="bottom-container">
-      <div class="game-over-container">
+      <div class="game-status-container">
         
       </div>
-
+      <div class="button-container">
+        <button id="replay_button" onclick="replayGame()">Replay</button>
+      </div>
       <div class="word-container">
         
       </div>
